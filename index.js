@@ -14,10 +14,21 @@ app.get('/api/price', async (req, res) => {
   }
 
   try {
-    const response = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`);
+    const binanceUrl = `https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`;
+    console.log('Fetching from:', binanceUrl);
+
+    const response = await fetch(binanceUrl);
     const data = await response.json();
+
+    console.log('Binance response:', data);
+
+    if (!data || !data.price) {
+      return res.status(500).json({ error: 'Invalid response from Binance' });
+    }
+
     res.json({ price: data.price });
   } catch (err) {
+    console.error('Fetch error:', err);
     res.status(500).json({ error: 'Binance fetch failed' });
   }
 });
